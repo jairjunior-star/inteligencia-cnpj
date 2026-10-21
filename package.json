@@ -1,0 +1,25 @@
+{
+  "name": "inteligencia-cnpj",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Consulta, valida e enriquece empresas do Bitrix24 a partir do CNPJ, com inteligência comercial.",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "test": "node --test tests/*.test.js",
+    "test:rotas": "node scripts/test-routes.mjs"
+  },
+  "engines": {
+    "node": ">=22.13"
+  },
+  "dependencies": {
+    "next": "^15.5.7",
+    "react": "^19.2.1",
+    "react-dom": "^19.2.1"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.0"
+  }
+}
