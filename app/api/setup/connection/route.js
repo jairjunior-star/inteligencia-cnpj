@@ -1,4 +1,4 @@
-import { route, readJson, json, sessionCookie, getSession, HttpError } from '@/lib/http';
+import { route, readJson, json, sessionCookie, sessionToken, getSession, HttpError } from '@/lib/http';
 import { parseWebhookUrl, createClient } from '@/lib/bitrix';
 import { getPortalByDomain, upsertPortal } from '@/lib/portal';
 import { hashPassword } from '@/lib/crypto';
@@ -47,15 +47,17 @@ export const POST = route(
     const userName = [profile?.NAME, profile?.LAST_NAME].filter(Boolean).join(' ') || `usuário ${parsed.userId}`;
     logInfo(portal.id, 'configuracao', `Conexão por webhook salva (usuário do webhook: ${userName})`, { admin }, 'administrador');
 
+    const payload = { pid: portal.id, mode: 'webhook', admin: true, uname: 'Administrador', exp: Date.now() + 8 * 3600000 };
     return json(
       {
         ok: true,
+        sessionToken: sessionToken(payload),
         portal: { domain: portal.domain },
         webhookUser: { name: userName, admin },
         warning: admin ? null : 'O webhook foi criado por um usuário que não é administrador. O app vai respeitar as permissões de CRM desse usuário.',
       },
       200,
-      { 'set-cookie': sessionCookie(request, { pid: portal.id, mode: 'webhook', admin: true, uname: 'Administrador' }) },
+      { 'set-cookie': sessionCookie(request, payload, { iframe: true }) },
     );
   },
   { auth: false },

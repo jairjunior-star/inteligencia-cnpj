@@ -12,6 +12,8 @@ const defaultAncestors = [
   'https://*.bitrix24.it',
   'https://*.bitrix24.pl',
   'https://*.bitrix24.uk',
+  'https://onnira.com',
+  'https://*.onnira.com',
 ];
 
 const frameAncestors = [...defaultAncestors, ...String(process.env.FRAME_ANCESTORS || '').split(/[\s,]+/).filter(Boolean)].join(' ');

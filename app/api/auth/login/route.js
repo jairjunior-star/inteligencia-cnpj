@@ -1,4 +1,4 @@
-import { route, readJson, json, sessionCookie, HttpError } from '@/lib/http';
+import { route, readJson, json, sessionCookie, sessionToken, HttpError } from '@/lib/http';
 import { getPortalByDomain } from '@/lib/portal';
 import { verifyPassword } from '@/lib/crypto';
 import { logWarn, logInfo } from '@/lib/log';
@@ -41,11 +41,8 @@ export const POST = route(
     }
     attempts.delete(domain);
     logInfo(portal.id, 'login', 'Acesso pelo modo webhook', null, 'administrador');
-    return json(
-      { ok: true },
-      200,
-      { 'set-cookie': sessionCookie(request, { pid: portal.id, mode: 'webhook', admin: true, uname: 'Administrador' }) },
-    );
+    const payload = { pid: portal.id, mode: 'webhook', admin: true, uname: 'Administrador', exp: Date.now() + 8 * 3600000 };
+    return json({ ok: true, sessionToken: sessionToken(payload) }, 200, { 'set-cookie': sessionCookie(request, payload, { iframe: true }) });
   },
   { auth: false },
 );
