@@ -1,5 +1,42 @@
 'use client';
 
+const ICONS = {
+  search: <><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></>,
+  building: <><rect x="4" y="3" width="16" height="18" rx="2" /><path d="M9 7h1M14 7h1M9 11h1M14 11h1M9 15h1M14 15h1M10 21v-3h4v3" /></>,
+  chart: <path d="M4 20V10M10 20V4M16 20v-7M22 20H2" />,
+  sparkle: <path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z" />,
+  target: <><circle cx="12" cy="12" r="9" /><circle cx="12" cy="12" r="5" /><circle cx="12" cy="12" r="1" /></>,
+  file: <><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z" /><path d="M14 3v6h6M8 13h8M8 17h5" /></>,
+  users: <><circle cx="9" cy="8" r="4" /><path d="M2 21c0-4 3-6 7-6s7 2 7 6M17 4a4 4 0 0 1 0 8M22 21c0-3-2-5-4-5.5" /></>,
+  refresh: <path d="M21 12a9 9 0 1 1-3-6.7L21 8M21 3v5h-5" />,
+  check: <path d="m5 12 5 5 9-10" />,
+  clock: <><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></>,
+  pin: <><path d="M12 21s-7-6.5-7-12a7 7 0 0 1 14 0c0 5.5-7 12-7 12z" /><circle cx="12" cy="9" r="2.5" /></>,
+  trending: <path d="M3 17l6-6 4 4 8-8M15 7h6v6" />,
+  database: <><ellipse cx="12" cy="5" rx="8" ry="3" /><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3" /></>,
+  plus: <path d="M12 5v14M5 12h14" />,
+};
+
+/** Ícones de traço (estilo Lucide), herdam a cor do texto. */
+export function Icon({ name, size = 18, className = '' }) {
+  return (
+    <svg className={`icon ${className}`} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      {ICONS[name]}
+    </svg>
+  );
+}
+
+export function SectionTitle({ icon, children, aside }) {
+  return (
+    <div className="section-title">
+      <span className="section-icon"><Icon name={icon} size={16} /></span>
+      <h2>{children}</h2>
+      {aside ? <span className="spacer" /> : null}
+      {aside}
+    </div>
+  );
+}
+
 export function Alert({ level = 'info', children }) {
   return <div className={`alert alert-${level}`} role={level === 'erro' ? 'alert' : 'status'}>{children}</div>;
 }

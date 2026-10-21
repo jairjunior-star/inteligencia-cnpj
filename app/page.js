@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { api } from '@/lib/client';
 import { maskCnpjInput, validateCnpj } from '@/lib/cnpj';
 import CompanyReport from './components/CompanyReport';
-import { Alert, Spinner } from './components/ui';
+import { Alert, Spinner, Icon } from './components/ui';
 
 export default function ConsultaPage() {
   const [input, setInput] = useState('');
@@ -78,19 +78,15 @@ export default function ConsultaPage() {
   );
 
   return (
-    <main className="page">
-      <div className="page-head">
-        <div>
-          <h1>Consultar CNPJ</h1>
-          <p>Digite o CNPJ para ver os dados da Receita Federal, o segmento, o porte e o potencial comercial. Depois, cadastre ou atualize a empresa no CRM com um clique.</p>
-        </div>
-      </div>
-
-      {pending && <Alert level="aviso">A configuração do aplicativo ainda não foi concluída. Peça a um administrador do Bitrix24 para abrir o app e finalizar a configuração.</Alert>}
-
-      <form className="card row" onSubmit={consultar} noValidate>
-        <label className="field" style={{ flex: '1 1 320px' }} htmlFor="cnpj">
-          CNPJ
+    <>
+    <section className="hero">
+      <div className="hero-inner">
+        <span className="eyebrow"><Icon name="sparkle" size={14} /> Inteligência de CNPJ para Bitrix24</span>
+        <h1>Digite o CNPJ. <span className="grad">O CRM se preenche sozinho.</span></h1>
+        <p>Dados da Receita Federal, segmento, porte e potencial comercial em segundos. Depois, cadastre ou atualize a empresa no Bitrix24 com um clique.</p>
+        <form className="search-box" onSubmit={consultar} noValidate>
+          <label htmlFor="cnpj" className="sr-only">CNPJ</label>
+          <Icon name="search" size={22} className="search-icon" />
           <input
             id="cnpj"
             className="cnpj-input"
@@ -103,14 +99,22 @@ export default function ConsultaPage() {
             aria-invalid={showInvalid}
             aria-describedby="cnpj-hint"
           />
-          <span id="cnpj-hint" className="hint">
-            {showInvalid ? <span style={{ color: 'var(--bad)' }}>{check.reason}</span> : 'Aceita o CNPJ numérico e o novo CNPJ alfanumérico.'}
-          </span>
-        </label>
-        <button type="submit" className="btn btn-primary" disabled={loading} style={{ alignSelf: 'center' }}>
-          {loading ? <Spinner label="Consultando" /> : null}Consultar
-        </button>
-      </form>
+          <button type="submit" className="btn btn-primary btn-lg" disabled={loading}>
+            {loading ? <Spinner label="Consultando" /> : null}Consultar
+          </button>
+        </form>
+        <p id="cnpj-hint" className="hero-hint">
+          {showInvalid ? <span className="hint-bad">{check.reason}</span> : 'Aceita o CNPJ numérico e o novo CNPJ alfanumérico.'}
+        </p>
+        <ul className="hero-points">
+          <li><Icon name="check" size={14} /> Bases públicas da Receita</li>
+          <li><Icon name="check" size={14} /> Sem cadastro duplicado</li>
+          <li><Icon name="check" size={14} /> Score de 0 a 100</li>
+        </ul>
+      </div>
+    </section>
+    <main className="page">
+      {pending && <Alert level="aviso">A configuração do aplicativo ainda não foi concluída. Peça a um administrador do Bitrix24 para abrir o app e finalizar a configuração.</Alert>}
 
       {error && <Alert level="erro">{error}</Alert>}
       {notice && (
@@ -126,10 +130,25 @@ export default function ConsultaPage() {
       {result && <CompanyReport result={result} actions={actions} />}
 
       {!result && !loading && !error && (
-        <section className="card empty">
-          <p>Experimente com o CNPJ de um cliente de teste. Os dados vêm das bases públicas da Receita Federal e ficam guardados por alguns dias para evitar consultas repetidas.</p>
-        </section>
+        <div className="grid grid-3 feature-grid">
+          <section className="card feature">
+            <span className="feature-icon"><Icon name="search" size={20} /></span>
+            <h3>1. Consulte</h3>
+            <p className="small">Digite o CNPJ e veja situação, atividade, endereço, contatos e sócios direto da Receita Federal.</p>
+          </section>
+          <section className="card feature">
+            <span className="feature-icon"><Icon name="sparkle" size={20} /></span>
+            <h3>2. Entenda o potencial</h3>
+            <p className="small">Segmento, porte, score de 0 a 100, alertas e uma sugestão de como abordar a empresa.</p>
+          </section>
+          <section className="card feature">
+            <span className="feature-icon"><Icon name="database" size={20} /></span>
+            <h3>3. Leve para o CRM</h3>
+            <p className="small">Cadastre ou atualize a empresa no Bitrix24 com um clique, sem duplicar e sem apagar o que o time editou.</p>
+          </section>
+        </div>
       )}
     </main>
+    </>
   );
 }

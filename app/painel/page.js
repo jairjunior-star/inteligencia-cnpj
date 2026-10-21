@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { api, formatDate } from '@/lib/client';
-import { Alert, Spinner, GradeBadge } from '../components/ui';
+import { Alert, Spinner, GradeBadge, Icon, SectionTitle } from '../components/ui';
 
 function Bars({ items }) {
   if (!items?.length) return <p className="muted small">Ainda sem dados.</p>;
@@ -42,15 +42,15 @@ export default function PainelPage() {
       {s && (
         <>
           <div className="grid grid-4">
-            <div className="card kpi"><span className="v">{s.enriquecidas}</span><span className="l">Empresas enriquecidas</span></div>
-            <div className="card kpi"><span className="v">{s.scoreMedio ?? '—'}</span><span className="l">Score médio (empresas ativas)</span></div>
-            <div className="card kpi"><span className="v">{s.prioridade.A}</span><span className="l">Alta prioridade (A)</span></div>
-            <div className="card kpi"><span className="v">{s.operacoes7dias}</span><span className="l">Cadastros e atualizações em 7 dias</span></div>
+            <div className="card kpi"><span className="kpi-icon"><Icon name="database" /></span><span className="v">{s.enriquecidas}</span><span className="l">Empresas enriquecidas</span></div>
+            <div className="card kpi"><span className="kpi-icon"><Icon name="sparkle" /></span><span className="v">{s.scoreMedio ?? '—'}</span><span className="l">Score médio (empresas ativas)</span></div>
+            <div className="card kpi kpi-highlight"><span className="kpi-icon"><Icon name="target" /></span><span className="v">{s.prioridade.A}</span><span className="l">Alta prioridade (A)</span></div>
+            <div className="card kpi"><span className="kpi-icon"><Icon name="refresh" /></span><span className="v">{s.operacoes7dias}</span><span className="l">Cadastros e atualizações em 7 dias</span></div>
           </div>
 
           <div className="grid grid-3">
             <section className="card stack">
-              <h2>Prioridade comercial</h2>
+              <SectionTitle icon="target">Prioridade comercial</SectionTitle>
               <Bars items={[
                 { label: 'A · Alta prioridade', count: s.prioridade.A },
                 { label: 'B · Média prioridade', count: s.prioridade.B },
@@ -58,13 +58,13 @@ export default function PainelPage() {
                 { label: 'Inativas (não prospectar)', count: s.inativas },
               ]} />
             </section>
-            <section className="card stack"><h2>Por segmento</h2><Bars items={s.porSegmento} /></section>
-            <section className="card stack"><h2>Por porte</h2><Bars items={s.porPorte} /></section>
+            <section className="card stack"><SectionTitle icon="chart">Por segmento</SectionTitle><Bars items={s.porSegmento} /></section>
+            <section className="card stack"><SectionTitle icon="building">Por porte</SectionTitle><Bars items={s.porPorte} /></section>
           </div>
 
           <div className="grid grid-2">
             <section className="card stack">
-              <h2>Melhores oportunidades</h2>
+              <SectionTitle icon="trending">Melhores oportunidades</SectionTitle>
               {s.top.length === 0 ? <p className="muted small">Consulte ou atualize empresas para ver o ranking.</p> : (
                 <div className="table-wrap">
                   <table>
@@ -84,7 +84,7 @@ export default function PainelPage() {
             </section>
             <div className="stack">
               <section className="card stack">
-                <h2>Qualidade dos dados no CRM</h2>
+                <SectionTitle icon="database">Qualidade dos dados no CRM</SectionTitle>
                 <Bars items={[
                   { label: 'Atualizadas', count: s.crm.atualizadas },
                   { label: 'Precisam de atualização', count: s.crm.desatualizadas },
@@ -92,7 +92,7 @@ export default function PainelPage() {
                 ]} />
                 <p className="small muted">{s.crm.total} empresas no CRM{s.crm.syncedAt ? ` · sincronizado em ${formatDate(s.crm.syncedAt, true)}` : ''}. <Link href="/empresas">Ver empresas</Link></p>
               </section>
-              <section className="card stack"><h2>Por estado</h2><Bars items={s.porUf} /></section>
+              <section className="card stack"><SectionTitle icon="pin">Por estado</SectionTitle><Bars items={s.porUf} /></section>
             </div>
           </div>
         </>

@@ -4,6 +4,16 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { api, SESSION_STORAGE_KEY } from '@/lib/client';
+import { Icon } from './ui';
+
+function Brand() {
+  return (
+    <>
+      <span className="brand-mark"><Icon name="search" size={18} /></span>
+      <span className="brand-text">Inteligência de CNPJ<small>para Bitrix24</small></span>
+    </>
+  );
+}
 
 const LINKS = [
   { href: '/', label: 'Consultar CNPJ' },
@@ -25,7 +35,7 @@ export default function Nav() {
     return (
       <header className="topbar">
         <div className="topbar-inner">
-          <span className="brand"><span className="brand-mark">CNPJ</span>Inteligência de CNPJ</span>
+          <span className="brand"><Brand /></span>
         </div>
       </header>
     );
@@ -43,7 +53,7 @@ export default function Nav() {
   return (
     <header className="topbar">
       <div className="topbar-inner">
-        <Link href="/" className="brand"><span className="brand-mark">CNPJ</span>Inteligência de CNPJ</Link>
+        <Link href="/" className="brand"><Brand /></Link>
         {me?.authenticated && (
           <nav className="nav" aria-label="Menu principal">
             {LINKS.filter((l) => !l.admin || admin).map((l) => (

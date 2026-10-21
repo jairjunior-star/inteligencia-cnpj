@@ -1,6 +1,6 @@
 'use client';
 
-import { Alert, SituacaoBadge, GradeBadge } from './ui';
+import { Alert, SituacaoBadge, GradeBadge, Icon, SectionTitle } from './ui';
 import { formatDate, formatMoney } from '@/lib/client';
 
 function cnae(code) {
@@ -24,41 +24,47 @@ export default function CompanyReport({ result, actions }) {
 
   return (
     <div className="stack">
-      <section className="card">
-        <div className="report-head">
+      <section className="report-hero">
+        <div className="report-hero-main">
           <div className="report-title">
             <div className="row">
               <SituacaoBadge situacao={data.situacao} />
               {data.matriz === false && <span className="badge badge-warn">Filial</span>}
-              {data.matriz === true && <span className="badge badge-muted">Matriz</span>}
-              {data.mei && <span className="badge badge-muted">MEI</span>}
-              {data.simples && !data.mei && <span className="badge badge-muted">Simples Nacional</span>}
+              {data.matriz === true && <span className="badge badge-glass">Matriz</span>}
+              {data.mei && <span className="badge badge-glass">MEI</span>}
+              {data.simples && !data.mei && <span className="badge badge-glass">Simples Nacional</span>}
             </div>
-            <h2 style={{ fontSize: 22 }}>{data.nomeFantasia || data.razaoSocial}</h2>
+            <h2>{data.nomeFantasia || data.razaoSocial}</h2>
             <p className="sub">
               {data.nomeFantasia ? `${data.razaoSocial} · ` : ''}CNPJ <span className="num">{cnpjFormatado}</span>
             </p>
           </div>
+          <div className="hero-score" aria-label={`Score de potencial ${intel.score} de 100`}>
+            <div className="score-ring score-ring-lg" style={{ '--v': intel.score, '--c': intel.ativa ? gradeColor[intel.grade] : 'var(--bad)' }}>
+              <span>{intel.score}<small>/100</small></span>
+            </div>
+            <GradeBadge grade={intel.ativa ? intel.grade : null} label={intel.gradeLabel} />
+          </div>
+        </div>
+        <div className="hero-facts">
+          <div><Icon name="target" size={16} /><span><small>Segmento</small>{intel.segmento.subsegmento || intel.segmento.segmento}</span></div>
+          <div><Icon name="building" size={16} /><span><small>Porte</small>{intel.porte.label}</span></div>
+          <div><Icon name="clock" size={16} /><span><small>Atividade</small>{intel.idadeAnos == null ? '—' : intel.idadeAnos === 0 ? 'Menos de 1 ano' : `${intel.idadeAnos} ${intel.idadeAnos === 1 ? 'ano' : 'anos'}`}</span></div>
+          <div><Icon name="pin" size={16} /><span><small>Local</small>{[data.endereco?.cidade, data.endereco?.uf].filter(Boolean).join('/') || '—'}</span></div>
+        </div>
+        <div className="report-hero-foot">
+          <p className="small">
+            Fonte: {data.fonte} · {source.cached ? 'cache local' : 'consulta agora'} em {formatDate(source.fetchedAt, true)}
+            {source.stale ? ' · as bases públicas estão indisponíveis; mostrando a última consulta salva' : ''}
+          </p>
           {actions && <div className="row">{actions}</div>}
         </div>
-        <p className="small muted" style={{ marginTop: 12 }}>
-          Fonte: {data.fonte} · {source.cached ? 'cache local' : 'consulta agora'} em {formatDate(source.fetchedAt, true)}
-          {source.stale ? ' · as bases públicas estão indisponíveis; mostrando a última consulta salva' : ''}
-        </p>
       </section>
 
       <div className="grid grid-2">
         <section className="card stack">
-          <h2>Inteligência comercial</h2>
-          <div className="score">
-            <div className="score-ring" style={{ '--v': intel.score, '--c': intel.ativa ? gradeColor[intel.grade] : 'var(--bad)' }}>
-              <span>{intel.score}</span>
-            </div>
-            <div className="stack" style={{ gap: 6 }}>
-              <div className="grade"><GradeBadge grade={intel.ativa ? intel.grade : null} label={intel.gradeLabel} /></div>
-              <p className="small">Score de potencial de 0 a 100, calculado com os critérios e pesos da configuração.</p>
-            </div>
-          </div>
+          <SectionTitle icon="sparkle">Como o score foi calculado</SectionTitle>
+          <p className="small muted">Score de potencial de 0 a 100, com os critérios e pesos definidos na configuração.</p>
           <div className="stack" style={{ gap: 10 }}>
             {intel.factors.map((f) => (
               <div className="factor" key={f.key}>
@@ -72,7 +78,7 @@ export default function CompanyReport({ result, actions }) {
         </section>
 
         <section className="card stack">
-          <h2>Segmento e porte</h2>
+          <SectionTitle icon="target">Segmento, porte e abordagem</SectionTitle>
           <dl className="kv">
             <div><dt>Segmento</dt><dd>{intel.segmento.segmento}</dd></div>
             <div><dt>Subsegmento</dt><dd>{intel.segmento.subsegmento || '—'}</dd></div>
@@ -88,15 +94,15 @@ export default function CompanyReport({ result, actions }) {
           )}
           {intel.approach.length > 0 && (
             <div className="stack" style={{ gap: 8 }}>
-              <h3>Sugestão de abordagem</h3>
-              <ul className="clean">{intel.approach.map((t, i) => <li key={i}>{t}</li>)}</ul>
+              <h3 className="approach-title"><Icon name="trending" size={16} /> Sugestão de abordagem</h3>
+              <ul className="approach">{intel.approach.map((t, i) => <li key={i}>{t}</li>)}</ul>
             </div>
           )}
         </section>
       </div>
 
       <section className="card stack">
-        <h2>Dados cadastrais</h2>
+        <SectionTitle icon="file">Dados cadastrais</SectionTitle>
         <dl className="kv">
           <div><dt>Data de abertura</dt><dd>{formatDate(data.abertura)}</dd></div>
           <div><dt>Situação desde</dt><dd>{formatDate(data.situacaoData)}{data.motivoSituacao && data.situacao !== 'ATIVA' ? ` · ${data.motivoSituacao}` : ''}</dd></div>
@@ -115,7 +121,7 @@ export default function CompanyReport({ result, actions }) {
         )}
         {data.socios?.length > 0 && (
           <div className="stack" style={{ gap: 8 }}>
-            <h3>Quadro societário</h3>
+            <h3 className="approach-title"><Icon name="users" size={16} /> Quadro societário</h3>
             <div className="table-wrap">
               <table>
                 <thead><tr><th>Nome</th><th>Qualificação</th><th>Desde</th></tr></thead>
