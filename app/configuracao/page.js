@@ -353,6 +353,49 @@ function PlacementStep({ bound }) {
   );
 }
 
+function InstallInBitrix() {
+  const [origin, setOrigin] = useState('');
+  const [copied, setCopied] = useState(null);
+  useEffect(() => { setOrigin(window.location.origin); }, []);
+  const items = [
+    { k: 'handler', label: 'Caminho do manipulador', v: `${origin}/api/bitrix/app` },
+    { k: 'install', label: 'Caminho inicial de instalação', v: `${origin}/api/bitrix/install` },
+  ];
+  async function copy(k, v) {
+    try {
+      await navigator.clipboard.writeText(v);
+      setCopied(k);
+      setTimeout(() => setCopied(null), 1500);
+    } catch {
+      setCopied(null);
+    }
+  }
+  const isHttps = origin.startsWith('https://');
+  return (
+    <section className="card stack">
+      <h2>Instalar dentro do Bitrix24 (opcional)</h2>
+      <p className="small muted">Com o app instalado, ele abre pelo menu Aplicativos do Bitrix24, usa o login de cada usuário e pode ganhar a aba “Inteligência de CNPJ” no cadastro da empresa.</p>
+      {!isHttps && origin && <Alert level="aviso">Este endereço não é HTTPS. O Bitrix24 só aceita aplicativos em endereços HTTPS públicos.</Alert>}
+      <ol className="howto">
+        <li>No Bitrix24, abra <strong>Aplicativos → Recursos para desenvolvedores → Outro → Aplicativo local</strong>.</li>
+        <li>Cole os dois endereços abaixo nos campos de mesmo nome.</li>
+        <li>Em permissões, marque <code>CRM (crm)</code>, <code>Usuários (user)</code>, <code>Incorporação de aplicativos (placement)</code> e <code>Tarefas (task)</code>.</li>
+        <li>Dê o nome <strong>Inteligência de CNPJ</strong> ao item de menu, deixe desmarcado “Usar apenas API” e salve.</li>
+        <li>Abra o app pelo menu Aplicativos e, como administrador, volte aqui para adicionar a aba na empresa.</li>
+      </ol>
+      <div className="stack" style={{ gap: 10 }}>
+        {items.map((i) => (
+          <div key={i.k} className="copy-row">
+            <span className="small"><strong>{i.label}</strong></span>
+            <code className="copy-value">{i.v}</code>
+            <button type="button" className="btn btn-sm btn-secondary" onClick={() => copy(i.k, i.v)}>{copied === i.k ? 'Copiado' : 'Copiar'}</button>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 export default function ConfiguracaoPage() {
   const [me, setMe] = useState(undefined);
   const [connected, setConnected] = useState(false);
@@ -396,6 +439,7 @@ export default function ConfiguracaoPage() {
       <FieldsStep enabled={connected} onDone={(ok) => ok && setFieldsDone(true)} />
       <SettingsStep enabled={connected && fieldsDone} onDone={() => setSettingsDone(true)} />
       {isApp && fieldsDone && <PlacementStep bound={me.portal?.placementBound} />}
+      {fieldsDone && !isApp && <InstallInBitrix />}
     </main>
   );
 }
