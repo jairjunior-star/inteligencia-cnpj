@@ -203,6 +203,8 @@ input:focus-visible, select:focus-visible, button:focus-visible, a:focus-visible
 .hero-facts .icon { color: var(--cyan); margin-top: 2px; }
 .hero-facts span { display: flex; flex-direction: column; font-weight: 700; font-size: 14px; min-width: 0; overflow-wrap: anywhere; }
 .hero-facts small { font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.07em; color: rgba(255, 255, 255, 0.6); }
+.map-link { display: inline-flex; align-items: center; gap: 4px; font-size: 13px; font-weight: 700; white-space: nowrap; margin-left: 4px; }
+.hero-map { color: var(--cyan); font-size: 12px; font-weight: 700; margin-top: 2px; }
 .report-hero-foot { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; border-top: 1px solid rgba(255, 255, 255, 0.12); padding-top: 16px; }
 .report-hero-foot p { color: rgba(255, 255, 255, 0.6); }
 .report-hero .btn-ghost { color: #fff; border-color: rgba(255, 255, 255, 0.3); }

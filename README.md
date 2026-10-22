@@ -14,7 +14,7 @@ Projeto do **Desafio Vibecode Br24** (card 01, Inteligência de CNPJ).
 | Permitir a atualização de empresas já cadastradas | Tela **Empresas do CRM** (atualização em lote) e tela da empresa, que mostra a prévia do que muda antes de gravar. |
 | Desafio criativo: inteligência comercial | Score configurável por critérios e pesos, prioridade A/B/C, alertas (inativa, filial, MEI, sem contato), sugestão de abordagem por segmento e porte, comentário na timeline e **Painel** com as melhores oportunidades. |
 
-Também tem: aba **Inteligência de CNPJ** dentro do cadastro da empresa (quando instalado como aplicativo), bloqueio de duplicidade pelo CNPJ e tela de **Logs**.
+Também tem: **follow-up automático** (um “a fazer” para o responsável quando a empresa é de alta prioridade A), botão **Ver no mapa**, aba **Inteligência de CNPJ** dentro do cadastro da empresa (quando instalado como aplicativo), bloqueio de duplicidade pelo CNPJ e tela de **Logs**.
 
 ## Requisitos técnicos do desafio
 
@@ -51,7 +51,7 @@ npm start
 ### Opção A: webhook de entrada (mais rápido, bom para testar)
 
 1. No Bitrix24, abra **Aplicativos → Recursos para desenvolvedores → Outro → Webhook de entrada**.
-2. Marque os escopos **CRM (crm)** e **Usuários (user)** e salve.
+2. Marque os escopos **CRM (crm)** e **Usuários (user)** e salve. Se o portal não tiver o “a fazer” do CRM, marque também **Tarefas (task)** para o follow-up automático.
 3. Copie a URL do webhook e cole no passo 1 da Configuração, criando uma senha de acesso.
 
 Nesse modo, o app age com as permissões do usuário que criou o webhook.

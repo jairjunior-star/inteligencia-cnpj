@@ -54,7 +54,8 @@ export default function EmpresaPage() {
     try {
       const body = preview.company.cnpj ? {} : { cnpj: preview.cnpj };
       const r = await api(`/api/crm/companies/${id}`, { method: 'POST', body });
-      setDone(r.updated ? `Empresa atualizada no CRM (${r.changes.length} ${r.changes.length === 1 ? 'campo' : 'campos'}).` : 'A empresa já estava com os dados em dia.');
+      const fu = r.followUp?.created ? ' Virou prioridade A: follow-up criado para o responsável.' : '';
+      setDone((r.updated ? `Empresa atualizada no CRM (${r.changes.length} ${r.changes.length === 1 ? 'campo' : 'campos'}).` : 'A empresa já estava com os dados em dia.') + fu);
       await load({});
     } catch (err) {
       setError(err.message);

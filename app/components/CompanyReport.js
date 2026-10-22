@@ -16,6 +16,12 @@ function address(e) {
   return [l1, e.bairro, [e.cidade, e.uf].filter(Boolean).join('/'), cep ? `CEP ${cep}` : null].filter(Boolean).join(' · ') || '—';
 }
 
+function mapsUrl(e) {
+  if (!e) return null;
+  const q = [[e.tipoLogradouro, e.logradouro].filter(Boolean).join(' '), e.numero, e.bairro, e.cidade, e.uf, e.cep, 'Brasil'].filter(Boolean).join(', ');
+  return e.logradouro || e.cep ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}` : null;
+}
+
 const gradeColor = { A: 'var(--grade-a)', B: 'var(--grade-b)', C: 'var(--grade-c)' };
 
 export default function CompanyReport({ result, actions }) {
@@ -50,7 +56,7 @@ export default function CompanyReport({ result, actions }) {
           <div><Icon name="target" size={16} /><span><small>Segmento</small>{intel.segmento.subsegmento || intel.segmento.segmento}</span></div>
           <div><Icon name="building" size={16} /><span><small>Porte</small>{intel.porte.label}</span></div>
           <div><Icon name="clock" size={16} /><span><small>Atividade</small>{intel.idadeAnos == null ? '—' : intel.idadeAnos === 0 ? 'Menos de 1 ano' : `${intel.idadeAnos} ${intel.idadeAnos === 1 ? 'ano' : 'anos'}`}</span></div>
-          <div><Icon name="pin" size={16} /><span><small>Local</small>{[data.endereco?.cidade, data.endereco?.uf].filter(Boolean).join('/') || '—'}</span></div>
+          <div><Icon name="pin" size={16} /><span><small>Local</small>{[data.endereco?.cidade, data.endereco?.uf].filter(Boolean).join('/') || '—'}{mapsUrl(data.endereco) && <a className="hero-map" href={mapsUrl(data.endereco)} target="_blank" rel="noopener noreferrer">Ver no mapa</a>}</span></div>
         </div>
         <div className="report-hero-foot">
           <p className="small">
@@ -107,7 +113,7 @@ export default function CompanyReport({ result, actions }) {
           <div><dt>Data de abertura</dt><dd>{formatDate(data.abertura)}</dd></div>
           <div><dt>Situação desde</dt><dd>{formatDate(data.situacaoData)}{data.motivoSituacao && data.situacao !== 'ATIVA' ? ` · ${data.motivoSituacao}` : ''}</dd></div>
           <div><dt>Atividade principal (CNAE)</dt><dd>{data.cnaePrincipal ? `${cnae(data.cnaePrincipal.codigo)} · ${data.cnaePrincipal.descricao || ''}` : '—'}</dd></div>
-          <div><dt>Endereço</dt><dd>{address(data.endereco)}</dd></div>
+          <div><dt>Endereço</dt><dd>{address(data.endereco)}{mapsUrl(data.endereco) && <> <a className="map-link" href={mapsUrl(data.endereco)} target="_blank" rel="noopener noreferrer"><Icon name="pin" size={14} /> Ver no mapa</a></>}</dd></div>
           <div><dt>Telefone</dt><dd>{data.telefones?.length ? data.telefones.join(' · ') : '—'}</dd></div>
           <div><dt>E-mail</dt><dd>{data.email || '—'}</dd></div>
         </dl>

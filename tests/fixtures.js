@@ -76,7 +76,7 @@ export function jsonResponse(status, body) {
 
 /** Bitrix24 simulado em memória: implementa os métodos REST que o app usa. */
 export function createMockBitrix({ webhookUrl = 'https://exemplo.bitrix24.com.br/rest/1/abc123def/' } = {}) {
-  const state = { userfields: [], companies: new Map(), nextId: 1, comments: [], calls: [] };
+  const state = { userfields: [], companies: new Map(), nextId: 1, comments: [], calls: [], todos: [], tasks: [], noTodo: false };
   const handlers = {
     profile: () => ({ ID: '1', NAME: 'Ana', LAST_NAME: 'Teste', ADMIN: true }),
     'user.admin': () => true,
@@ -96,7 +96,7 @@ export function createMockBitrix({ webhookUrl = 'https://exemplo.bitrix24.com.br
     },
     'crm.company.add': (p) => {
       const id = state.nextId++;
-      state.companies.set(id, { ID: String(id), DATE_MODIFY: new Date().toISOString(), ...p.fields });
+      state.companies.set(id, { ID: String(id), DATE_MODIFY: new Date().toISOString(), ASSIGNED_BY_ID: '1', ...p.fields });
       return id;
     },
     'crm.company.get': (p) => state.companies.get(Number(p.id)) || null,
@@ -114,6 +114,15 @@ export function createMockBitrix({ webhookUrl = 'https://exemplo.bitrix24.com.br
       return state.comments.length;
     },
     'placement.bind': () => true,
+    'crm.activity.todo.add': (p) => {
+      if (state.noTodo) return { error: 'ERROR_METHOD_NOT_FOUND', error_description: 'Method not found' };
+      state.todos.push(p);
+      return { id: state.todos.length };
+    },
+    'tasks.task.add': (p) => {
+      state.tasks.push(p.fields);
+      return { task: { id: state.tasks.length } };
+    },
   };
   async function fetchImpl(url, init) {
     const u = String(url);

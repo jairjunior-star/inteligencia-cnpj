@@ -28,6 +28,8 @@ export const POST = route(
       staleDays: intIn(body.staleDays ?? 90, 1, 730, 'Dias para considerar desatualizada'),
       titleFrom: body.titleFrom === 'razao' ? 'razao' : 'fantasia',
       timelineComment: body.timelineComment !== false,
+      autoFollowUp: body.autoFollowUp !== false,
+      followUpDays: intIn(body.followUpDays ?? 2, 0, 30, 'Prazo do follow-up (dias)'),
       targetSegments: (Array.isArray(body.targetSegments) ? body.targetSegments : []).filter((s) => SEGMENT_NAMES.includes(s)),
       weights,
     });

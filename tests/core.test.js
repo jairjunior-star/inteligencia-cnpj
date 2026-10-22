@@ -145,6 +145,13 @@ test('fluxo completo com Bitrix24 simulado', async () => {
   assert.equal(saved.ADDRESS_CITY, 'FLORIANOPOLIS');
   assert.equal(saved.PHONE[0].VALUE, '(48) 3333-4444');
   assert.equal(bx.state.comments.length, 1);
+  // Prioridade A: um "a fazer" de follow-up para o responsável
+  assert.equal(reg.followUp.created, true);
+  assert.equal(bx.state.todos.length, 1);
+  assert.equal(bx.state.todos[0].ownerTypeId, 4);
+  assert.equal(bx.state.todos[0].ownerId, reg.id);
+  assert.equal(bx.state.todos[0].responsibleId, 1);
+  assert.match(bx.state.todos[0].title, /Prospectar EXEMPLO DIGITAL/);
 
   // Duplicidade bloqueada
   await assert.rejects(() => registerCompany(portal, session, '11222333000181', opts), (e) => e.code === 'empresa_existente');
@@ -166,6 +173,7 @@ test('fluxo completo com Bitrix24 simulado', async () => {
   assert.equal(after.UF_CRM_CNPJI_SITUACAO, 'INAPTA');
   assert.equal(after.PHONE.length, 2);
   assert.equal(after.TITLE, 'EXEMPLO DIGITAL', 'nome existente preservado');
+  assert.equal(bx.state.todos.length, 1, 'empresa inativa não gera follow-up');
 
   // Empresa sem CNPJ pede o CNPJ
   bx.state.companies.set(99, { ID: '99', TITLE: 'Cliente antigo', DATE_MODIFY: '2025-01-01' });
@@ -185,6 +193,34 @@ test('fluxo completo com Bitrix24 simulado', async () => {
   const logs = listLogs(portal.id);
   assert.ok(logs.some((l) => l.action === 'cadastro'));
   assert.ok(!JSON.stringify(logs).includes('abc123def'), 'logs não contêm o webhook');
+});
+
+test('follow-up: só quando vira A, sem duplicar, e com tarefa como alternativa', async () => {
+  const bx = createMockBitrix({ webhookUrl: 'https://outro.bitrix24.com.br/rest/1/xyz789/' });
+  bx.state.noTodo = true; // portal sem crm.activity.todo.add
+  const { getDb } = await import('../lib/db.js');
+  getDb().prepare('DELETE FROM cnpj_cache').run(); // o teste anterior deixou a versão INAPTA em cache
+  const p0 = upsertPortal({ domain: 'outro.bitrix24.com.br', mode: 'webhook', credentials: { webhookUrl: bx.webhookUrl } });
+  const session = { pid: p0.id, mode: 'webhook', admin: true };
+  const client = createClient({ type: 'webhook', url: bx.webhookUrl }, { fetchImpl: bx.fetchImpl, minIntervalMs: 0 });
+  const { map } = await ensureFields(client, {});
+  saveFieldMap(p0.id, map);
+  const portal = getPortalById(p0.id);
+  const opts = { fetchImpl: async () => jsonResponse(200, brasilApiSample), bitrixFetch: bx.fetchImpl };
+  const reg = await registerCompany(portal, session, '11222333000181', opts);
+  assert.equal(reg.followUp.type, 'task');
+  assert.equal(bx.state.tasks.length, 1);
+  assert.deepEqual(bx.state.tasks[0].UF_CRM_TASK, [`CO_${reg.id}`]);
+  // Atualizar de novo uma empresa que já era A não cria outro follow-up
+  const again = await enrichCompany(portal, session, reg.id, { ...opts, apply: true });
+  assert.equal(again.followUp, null);
+  assert.equal(bx.state.tasks.length, 1);
+  // Desligado na configuração
+  const { saveSettings } = await import('../lib/portal.js');
+  saveSettings(p0.id, { ...portal.settings, autoFollowUp: false });
+  bx.state.companies.set(77, { ID: '77', TITLE: 'Outra', ASSIGNED_BY_ID: '5' });
+  const off = await enrichCompany(getPortalById(p0.id), session, 77, { ...opts, cnpj: '11222333000181', apply: true });
+  assert.equal(off.followUp, null);
 });
 
 test('diff não apaga dados existentes', () => {

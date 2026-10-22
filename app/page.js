@@ -56,7 +56,8 @@ export default function ConsultaPage() {
     setError(null);
     try {
       const r = await api('/api/crm/companies', { method: 'POST', body: { cnpj: result.cnpj } });
-      setNotice({ level: 'ok', text: `Empresa "${r.title}" cadastrada no CRM (#${r.id}) com score ${r.intel.score}.`, companyId: r.id });
+      const fu = r.followUp?.created ? ` Follow-up criado para o responsável${r.followUp.days ? `, com prazo de ${r.followUp.days} ${r.followUp.days === 1 ? 'dia' : 'dias'}` : ''}.` : '';
+      setNotice({ level: 'ok', text: `Empresa "${r.title}" cadastrada no CRM (#${r.id}) com score ${r.intel.score}.${fu}`, companyId: r.id });
       setResult((prev) => ({ ...prev, crm: { ...prev.crm, matches: [{ id: r.id, title: r.title }] } }));
     } catch (err) {
       setError(err.message);

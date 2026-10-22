@@ -109,7 +109,7 @@ function ConnectionStep({ me, onDone }) {
               <ol className="howto" style={{ marginTop: 10 }}>
                 <li>No Bitrix24, abra <strong>Aplicativos → Recursos para desenvolvedores</strong>.</li>
                 <li>Escolha <strong>Outro → Webhook de entrada</strong>.</li>
-                <li>Marque os escopos <code>CRM (crm)</code> e <code>Usuários (user)</code>.</li>
+                <li>Marque os escopos <code>CRM (crm)</code> e <code>Usuários (user)</code>. Se o seu portal não tiver “a fazer” no CRM, marque também <code>Tarefas (task)</code>.</li>
                 <li>Clique em <strong>Salvar</strong> e copie a URL do webhook.</li>
               </ol>
               <p className="small muted" style={{ marginTop: 10 }}>O app vai agir com as permissões do usuário que criou o webhook. Prefira um usuário com acesso de edição às empresas do CRM.</p>
@@ -242,7 +242,7 @@ function SettingsStep({ enabled, onDone }) {
     setError(null);
     setMsg(null);
     try {
-      const body = { ...form, ttlDays: Number(form.ttlDays), staleDays: Number(form.staleDays), weights: Object.fromEntries(Object.entries(form.weights).map(([k, v]) => [k, Number(v)])) };
+      const body = { ...form, ttlDays: Number(form.ttlDays), staleDays: Number(form.staleDays), followUpDays: Number(form.followUpDays), weights: Object.fromEntries(Object.entries(form.weights).map(([k, v]) => [k, Number(v)])) };
       const r = await api('/api/setup/settings', { method: 'POST', body });
       setForm(r.settings);
       setMsg('Preferências salvas.');
@@ -282,6 +282,19 @@ function SettingsStep({ enabled, onDone }) {
         <input id="timeline" type="checkbox" checked={form.timelineComment} onChange={(e) => set('timelineComment', e.target.checked)} />
         Registrar um comentário na timeline da empresa a cada cadastro ou atualização
       </label>
+
+      <div className="stack" style={{ gap: 8 }}>
+        <h3>Follow-up automático</h3>
+        <label className="checkbox" htmlFor="followup">
+          <input id="followup" type="checkbox" checked={form.autoFollowUp} onChange={(e) => set('autoFollowUp', e.target.checked)} />
+          Criar um “a fazer” de follow-up para o responsável quando a empresa for de alta prioridade (A)
+        </label>
+        <label className="field" htmlFor="followup-days" style={{ maxWidth: 280 }}>
+          Prazo do follow-up (dias)
+          <input id="followup-days" type="number" min={0} max={30} value={form.followUpDays} disabled={!form.autoFollowUp} onChange={(e) => set('followUpDays', e.target.value)} />
+          <span className="hint">Criado só uma vez, quando a empresa passa a ser A.</span>
+        </label>
+      </div>
 
       <div className="stack" style={{ gap: 8 }}>
         <h3>Segmentos-alvo</h3>

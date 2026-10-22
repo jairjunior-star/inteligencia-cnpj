@@ -21,6 +21,8 @@ Além do cadastro, o app gera inteligência comercial:
 - **Prioridade A, B ou C** e **alertas:** empresa inativa, filial, MEI ou sem contato público.
 - **Sugestão de abordagem:** por segmento e porte, com os sócios como prováveis decisores.
 - **Comentário automático na timeline** da empresa a cada cadastro ou atualização.
+- **Follow-up automático:** quando a empresa é de alta prioridade (A), o responsável recebe um “a fazer” no CRM com prazo configurável.
+- **Ver no mapa:** o endereço da Receita abre direto no mapa.
 - **Painel** com as melhores oportunidades e a distribuição da base por segmento, porte e estado.
 
 Para manter o CRM em dia, a tela **Empresas do CRM** mostra quais empresas estão sem CNPJ ou com dados antigos e permite atualizar várias de uma vez. Antes de gravar, o app mostra exatamente o que vai mudar, sem sobrescrever o nome nem o endereço que o seu time já editou. O CNPJ repetido é bloqueado, para evitar empresas duplicadas.
