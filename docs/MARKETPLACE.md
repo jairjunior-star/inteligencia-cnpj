@@ -25,6 +25,8 @@ Além do cadastro, o app gera inteligência comercial:
 - **Ver no mapa:** o endereço da Receita abre direto no mapa.
 - **Painel** com as melhores oportunidades e a distribuição da base por segmento, porte e estado.
 
+Para prospectar, a área **Prospecção** transforma listas de CNPJs (de feiras, eventos, associações ou planilhas) em oportunidades: o app analisa cada empresa, permite filtrar por CNAE, segmento, porte, região e score, e importa as escolhidas para o Bitrix24 já com negócio no funil, responsável e follow-up. A lista enriquecida também pode ser exportada em CSV.
+
 Para manter o CRM em dia, a tela **Empresas do CRM** mostra quais empresas estão sem CNPJ ou com dados antigos e permite atualizar várias de uma vez. Antes de gravar, o app mostra exatamente o que vai mudar, sem sobrescrever o nome nem o endereço que o seu time já editou. O CNPJ repetido é bloqueado, para evitar empresas duplicadas.
 
 Também funciona com o **novo CNPJ alfanumérico** da Receita Federal.

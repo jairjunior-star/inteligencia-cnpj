@@ -24,7 +24,8 @@ const load = async (n) => import(path.resolve(dir, `${n}.mjs`));
 const R = {
   me: await load('auth_me'), login: await load('auth_login'), conn: await load('setup_connection'), fields: await load('setup_fields'),
   settings: await load('setup_settings'), cnpj: await load('cnpj__cnpj_'), companies: await load('crm_companies'),
-  company: await load('crm_companies__id_'), stats: await load('stats'), logs: await load('logs'), app: await load('bitrix_app'), install: await load('bitrix_install'),
+  company: await load('crm_companies__id_'), stats: await load('stats'),
+  listas: await load('listas'), lista: await load('listas__id_'), processar: await load('listas__id__processar'), base: await load('base'), funis: await load('crm_funis'), importar: await load('prospeccao_importar'), logs: await load('logs'), app: await load('bitrix_app'), install: await load('bitrix_install'),
 };
 
 let cookie = '';
@@ -112,6 +113,25 @@ assert.equal(r.json.changes.length, 0);
 r = await call(R.company, 'GET', '/api/crm/companies/abc', { params: { id: 'abc' } });
 assert.equal(r.status, 400);
 ok('lista, prévia e atualização de empresas');
+
+// Prospecção: lista → análise → base → funis → importação com negócio
+r = await call(R.listas, 'POST', '/api/listas', { body: { name: 'Feira', cnpjs: ['11222333000181', '00000000000191', 'xx'] } });
+assert.equal(r.status, 200, JSON.stringify(r.json)); const listId = r.json.id; assert.equal(r.json.total, 2);
+r = await call(R.processar, 'POST', `/api/listas/${listId}/processar`, { params: { id: String(listId) }, body: {} });
+assert.equal(r.json.done, true); assert.equal(r.json.counts.nao_encontrado, 1);
+r = await call(R.lista, 'GET', `/api/listas/${listId}`, { params: { id: String(listId) } });
+assert.equal(r.json.items.length, 2); assert.ok(r.json.items[0].companyId, 'já está no CRM');
+r = await call(R.base, 'GET', '/api/base?cnae=6201&ativas=1');
+assert.equal(r.json.items.length, 1);
+r = await call(R.funis, 'GET', '/api/crm/funis');
+assert.equal(r.json.pipelines.length, 2); assert.equal(r.json.users.length, 2);
+r = await call(R.importar, 'POST', '/api/prospeccao/importar', { body: { cnpjs: ['11222333000181'], categoryId: 7, stageId: 'C7:NEW', dealForExisting: true, listId } });
+assert.equal(r.json.results[0].status, 'ja_no_crm'); assert.ok(r.json.results[0].dealId);
+r = await call(R.importar, 'POST', '/api/prospeccao/importar', { body: { cnpjs: [] } });
+assert.equal(r.status, 400);
+r = await call(R.lista, 'DELETE', `/api/listas/${listId}`, { params: { id: String(listId) } });
+assert.equal(r.json.deleted, true);
+ok('prospecção: lista, análise, busca na base, funis e importação com negócio');
 
 r = await call(R.stats, 'GET', '/api/stats');
 assert.equal(r.json.enriquecidas, 1); assert.equal(r.json.crm.total, 2);

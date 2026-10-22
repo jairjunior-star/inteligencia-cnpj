@@ -42,7 +42,7 @@ export default function PainelPage() {
       {s && (
         <>
           <div className="grid grid-4">
-            <div className="card kpi"><span className="kpi-icon"><Icon name="database" /></span><span className="v">{s.enriquecidas}</span><span className="l">Empresas enriquecidas</span></div>
+            <div className="card kpi"><span className="kpi-icon"><Icon name="database" /></span><span className="v">{s.enriquecidas}</span><span className="l">Empresas analisadas</span></div>
             <div className="card kpi"><span className="kpi-icon"><Icon name="sparkle" /></span><span className="v">{s.scoreMedio ?? '—'}</span><span className="l">Score médio (empresas ativas)</span></div>
             <div className="card kpi kpi-highlight"><span className="kpi-icon"><Icon name="target" /></span><span className="v">{s.prioridade.A}</span><span className="l">Alta prioridade (A)</span></div>
             <div className="card kpi"><span className="kpi-icon"><Icon name="refresh" /></span><span className="v">{s.operacoes7dias}</span><span className="l">Cadastros e atualizações em 7 dias</span></div>

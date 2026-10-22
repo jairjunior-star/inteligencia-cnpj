@@ -282,6 +282,22 @@ code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 1
 .muted { color: var(--muted); }
 .small { font-size: 13px; }
 
+/* ---------- Prospecção ---------- */
+.tabs { display: flex; gap: 6px; flex-wrap: wrap; }
+.tabs button { font: inherit; font-weight: 700; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; padding: 9px 18px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--muted); cursor: pointer; }
+.tabs button.active { background: var(--navy-900); color: #fff; border-color: var(--navy-900); box-shadow: inset 0 -2px 0 var(--cyan); }
+.eyebrow-light { color: var(--primary); border-color: rgba(11, 99, 206, 0.35); }
+.filters { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 12px; }
+textarea { font: inherit; font-size: 14px; color: var(--ink); background: #fff; border: 1px solid #cdd8e7; border-radius: 12px; padding: 10px 12px; width: 100%; resize: vertical; font-variant-numeric: tabular-nums; }
+textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(11, 99, 206, 0.15); outline: none; }
+input[type='file'] { font: inherit; font-size: 13px; padding: 8px 0; }
+.action-bar { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 64px); z-index: 5; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; background: rgba(255, 255, 255, 0.92); backdrop-filter: blur(10px); border: 1px solid var(--line); border-radius: 16px; padding: 10px 14px; box-shadow: var(--shadow); }
+.card-table { background: var(--surface); box-shadow: var(--shadow); }
+.import-panel { border-color: rgba(11, 99, 206, 0.35); box-shadow: 0 0 0 3px rgba(11, 99, 206, 0.08), var(--shadow); }
+.mini-kpi { display: flex; flex-direction: column; background: var(--surface-2); border-radius: 12px; padding: 10px 14px; }
+.mini-kpi .v { font-size: 24px; font-weight: 800; color: var(--ink); font-variant-numeric: tabular-nums; }
+.mini-kpi .l { font-size: 12.5px; color: var(--muted); }
+
 /* ---------- Celular ---------- */
 @media (max-width: 640px) {
   .hero h1 { font-size: 31px; }

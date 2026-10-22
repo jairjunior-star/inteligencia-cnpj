@@ -76,7 +76,7 @@ export function jsonResponse(status, body) {
 
 /** Bitrix24 simulado em memória: implementa os métodos REST que o app usa. */
 export function createMockBitrix({ webhookUrl = 'https://exemplo.bitrix24.com.br/rest/1/abc123def/' } = {}) {
-  const state = { userfields: [], companies: new Map(), nextId: 1, comments: [], calls: [], todos: [], tasks: [], noTodo: false };
+  const state = { userfields: [], companies: new Map(), nextId: 1, comments: [], calls: [], todos: [], tasks: [], deals: [], noTodo: false };
   const handlers = {
     profile: () => ({ ID: '1', NAME: 'Ana', LAST_NAME: 'Teste', ADMIN: true }),
     'user.admin': () => true,
@@ -118,6 +118,21 @@ export function createMockBitrix({ webhookUrl = 'https://exemplo.bitrix24.com.br
       if (state.noTodo) return { error: 'ERROR_METHOD_NOT_FOUND', error_description: 'Method not found' };
       state.todos.push(p);
       return { id: state.todos.length };
+    },
+    'crm.category.list': () => ({ categories: [{ id: 0, name: 'Geral', isDefault: 'Y' }, { id: 7, name: 'Prospecção', isDefault: 'N' }] }),
+    'crm.status.list': (p) => {
+      const pre = p.filter.ENTITY_ID === 'DEAL_STAGE' ? '' : `C${p.filter.ENTITY_ID.split('_').pop()}:`;
+      return [
+        { STATUS_ID: `${pre}NEW`, NAME: 'Novo' },
+        { STATUS_ID: `${pre}PREPARATION`, NAME: 'Primeiro contato' },
+        { STATUS_ID: `${pre}WON`, NAME: 'Ganho', EXTRA: { SEMANTICS: 'S' } },
+        { STATUS_ID: `${pre}LOSE`, NAME: 'Perdido', EXTRA: { SEMANTICS: 'F' } },
+      ];
+    },
+    'user.get': () => [{ ID: '1', NAME: 'Ana', LAST_NAME: 'Souza' }, { ID: '5', NAME: 'Bruno', LAST_NAME: 'Lima' }],
+    'crm.deal.add': (p) => {
+      state.deals.push(p.fields);
+      return state.deals.length;
     },
     'tasks.task.add': (p) => {
       state.tasks.push(p.fields);

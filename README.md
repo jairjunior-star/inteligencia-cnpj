@@ -14,6 +14,13 @@ Projeto do **Desafio Vibecode Br24** (card 01, Inteligência de CNPJ).
 | Permitir a atualização de empresas já cadastradas | Tela **Empresas do CRM** (atualização em lote) e tela da empresa, que mostra a prévia do que muda antes de gravar. |
 | Desafio criativo: inteligência comercial | Score configurável por critérios e pesos, prioridade A/B/C, alertas (inativa, filial, MEI, sem contato), sugestão de abordagem por segmento e porte, comentário na timeline e **Painel** com as melhores oportunidades. |
 
+### Prospecção
+
+- **Listas:** cole uma coluna de CNPJs (ou envie um CSV). O app valida, recupera zeros apagados pelo Excel, ignora repetidos e analisa cada CNPJ na Receita em pequenos lotes, com barra de progresso. Dá para pausar e continuar depois.
+- **Buscar na base:** filtre tudo o que o app já analisou por CNAE (código ou descrição), segmento, porte, UF, cidade, score e situação, ou só o que ainda não está no CRM.
+- **Importar para o Bitrix24:** cria a empresa (sem duplicar) e um **negócio** no funil e na etapa escolhidos, com responsável. Funis, etapas e usuários são lidos do portal. Empresas inativas são puladas; as de prioridade A ganham follow-up.
+- **Exportar CSV:** a lista enriquecida abre direto no Excel.
+
 Também tem: **follow-up automático** (um “a fazer” para o responsável quando a empresa é de alta prioridade A), botão **Ver no mapa**, aba **Inteligência de CNPJ** dentro do cadastro da empresa (quando instalado como aplicativo), bloqueio de duplicidade pelo CNPJ e tela de **Logs**.
 
 ## Requisitos técnicos do desafio

@@ -17,6 +17,7 @@ function Brand() {
 
 const LINKS = [
   { href: '/', label: 'Consultar CNPJ' },
+  { href: '/prospeccao', label: 'Prospecção' },
   { href: '/empresas', label: 'Empresas do CRM' },
   { href: '/painel', label: 'Painel' },
   { href: '/logs', label: 'Logs' },
