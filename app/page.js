@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { api } from '@/lib/client';
+import { api, bitrixCompanyUrl } from '@/lib/client';
 import { maskCnpjInput, validateCnpj } from '@/lib/cnpj';
 import CompanyReport from './components/CompanyReport';
 import { Alert, Spinner, Icon } from './components/ui';
@@ -15,11 +15,13 @@ export default function ConsultaPage() {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [pending, setPending] = useState(false);
+  const [domain, setDomain] = useState(null);
 
   useEffect(() => {
     setPending(new URLSearchParams(window.location.search).get('pendente') === '1');
     api('/api/auth/me', { redirectOnAuth: false })
       .then((me) => {
+        if (me.portal?.domain) setDomain(me.portal.domain);
         if (!me.authenticated) window.location.href = me.hasPortals ? '/entrar' : '/configuracao';
         else if (!me.portal.configured && me.user.admin) window.location.href = '/configuracao';
         else if (!me.portal.configured) setPending(true);
@@ -119,7 +121,7 @@ export default function ConsultaPage() {
       {error && <Alert level="erro">{error}</Alert>}
       {notice && (
         <Alert level={notice.level}>
-          <span>{notice.text} {notice.companyId ? <Link href={`/empresa/${notice.companyId}`}>Ver empresa</Link> : null}</span>
+          <span>{notice.text} {notice.companyId ? <Link href={`/empresa/${notice.companyId}`}>Ver no app</Link> : null}{notice.companyId && domain ? <> · <a href={bitrixCompanyUrl(domain, notice.companyId)} target="_blank" rel="noopener noreferrer">Abrir no Bitrix24</a></> : null}</span>
         </Alert>
       )}
       {result?.crm?.error && <Alert level="aviso">Não foi possível verificar o CRM agora: {result.crm.error}</Alert>}

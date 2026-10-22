@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { api, formatDate } from '@/lib/client';
+import { api, formatDate, bitrixCompanyUrl } from '@/lib/client';
 import { maskCnpjInput, validateCnpj } from '@/lib/cnpj';
 import CompanyReport from '../../components/CompanyReport';
 import { Alert, Spinner, ChangesTable } from '../../components/ui';
@@ -17,6 +17,11 @@ export default function EmpresaPage() {
   const [done, setDone] = useState(null);
   const [cnpjInput, setCnpjInput] = useState('');
   const [inTab, setInTab] = useState(false);
+  const [domain, setDomain] = useState(null);
+
+  useEffect(() => {
+    api('/api/auth/me', { redirectOnAuth: false }).then((me) => setDomain(me.portal?.domain || null)).catch(() => {});
+  }, []);
 
   const load = useCallback(
     async ({ cnpj = null, force = false } = {}) => {
@@ -71,6 +76,9 @@ export default function EmpresaPage() {
             {preview?.company?.enrichedAt ? ` · dados da Receita atualizados em ${formatDate(preview.company.enrichedAt, true)}` : ' · ainda não atualizada pelo app'}
           </p>
         </div>
+        {domain && !inTab && (
+          <a className="btn btn-secondary" href={bitrixCompanyUrl(domain, id)} target="_blank" rel="noopener noreferrer">Abrir no Bitrix24</a>
+        )}
       </div>
 
       {error && <Alert level="erro">{error}</Alert>}
