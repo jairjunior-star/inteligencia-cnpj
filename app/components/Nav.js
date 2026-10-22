@@ -21,7 +21,6 @@ const LINKS = [
   { href: '/empresas', label: 'Empresas do CRM' },
   { href: '/painel', label: 'Painel' },
   { href: '/logs', label: 'Logs' },
-  { href: '/configuracao', label: 'Configuração', admin: true },
 ];
 
 export default function Nav() {
@@ -64,8 +63,16 @@ export default function Nav() {
         )}
         {me?.authenticated && (
           <div className="who">
-            <span>{me.user.name} · {me.portal.domain}</span>
-            {me.user.mode === 'webhook' && <button type="button" onClick={logout}>Sair</button>}
+            {admin && (
+              <Link href="/configuracao" className={`icon-btn ${isActive('/configuracao') ? 'active' : ''}`} aria-label="Configuração" title="Configuração">
+                <Icon name="settings" size={18} />
+              </Link>
+            )}
+            <span className="who-chip" title={`${me.user.name} · ${me.portal.domain}`}>
+              <span className="avatar" aria-hidden="true">{(me.user.name || '?').trim().slice(0, 1).toUpperCase()}</span>
+              <span className="who-text"><strong>{me.user.name}</strong><small>{me.portal.domain}</small></span>
+            </span>
+            {me.user.mode === 'webhook' && <button type="button" className="logout" onClick={logout}>Sair</button>}
           </div>
         )}
       </div>
