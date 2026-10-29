@@ -112,3 +112,10 @@ test('lista: criar, processar em lotes, buscar e importar com negócio', async (
   P.deleteList(portal, session, c2.id);
   assert.equal(P.listLists(portal).length, 1);
 });
+
+test('extractCnpjs ignora textos de 14 letras (nomes em colunas extras)', () => {
+  const r = extractCnpjs('cnpj;empresa\n33.000.167/0001-01;Petrobras\n33.000.167/0001-01;Teste duplicado\n');
+  assert.deepEqual(r.valid, ['33000167000101']);
+  assert.deepEqual(r.invalid, []);
+  assert.equal(r.duplicates, 1);
+});

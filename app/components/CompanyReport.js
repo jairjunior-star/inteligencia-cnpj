@@ -2,6 +2,7 @@
 
 import { Alert, SituacaoBadge, GradeBadge, Icon, SectionTitle } from './ui';
 import { formatDate, formatMoney } from '@/lib/client';
+import { useState } from 'react';
 
 function cnae(code) {
   const c = String(code || '').padStart(7, '0');
@@ -22,7 +23,71 @@ function mapsUrl(e) {
   return e.logradouro || e.cep ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}` : null;
 }
 
-const gradeColor = { A: 'var(--grade-a)', B: 'var(--grade-b)', C: 'var(--grade-c)' };
+function whatsappUrl(phone) {
+  const d = String(phone || '').replace(/\D/g, '');
+  return d.length >= 10 ? `https://wa.me/55${d}` : null;
+}
+
+function searchLinks(data) {
+  const nome = data.nomeFantasia || data.razaoSocial || '';
+  const cidade = [data.endereco?.cidade, data.endereco?.uf].filter(Boolean).join(' ');
+  return {
+    google: `https://www.google.com/search?q=${encodeURIComponent(`"${data.razaoSocial || nome}" ${cidade}`.trim())}`,
+    linkedin: `https://www.linkedin.com/search/results/companies/?keywords=${encodeURIComponent(nome)}`,
+  };
+}
+
+function approachText(data, intel, cnpjFormatado) {
+  const lines = [
+    `${data.nomeFantasia || data.razaoSocial} · CNPJ ${cnpjFormatado}`,
+    `Segmento: ${intel.segmento.subsegmento || intel.segmento.segmento} · Porte: ${intel.porte.label} · Score ${intel.score}/100 (${intel.grade})`,
+  ];
+  if (intel.approach.length) lines.push('', 'Sugestão de abordagem:', ...intel.approach.map((t) => `- ${t}`));
+  if (data.socios?.length) lines.push('', 'Sócios (prováveis decisores):', ...data.socios.slice(0, 5).map((s) => `- ${s.nome}${s.qualificacao ? ` (${s.qualificacao})` : ''}`));
+  const contato = [data.telefones?.join(' / '), data.email].filter(Boolean).join(' · ');
+  if (contato) lines.push('', `Contato: ${contato}`);
+  return lines.join('\n');
+}
+
+async function copyText(text) {
+  try {
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch {
+    // Dentro de iframe (Onnira/Bitrix24) a API de área de transferência pode ser bloqueada.
+    try {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly', '');
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      const ok = document.execCommand('copy');
+      document.body.removeChild(ta);
+      return ok;
+    } catch {
+      return false;
+    }
+  }
+}
+
+function CopyApproach({ text }) {
+  const [state, setState] = useState(null);
+  async function copy() {
+    const ok = await copyText(text);
+    setState(ok ? 'ok' : 'erro');
+    setTimeout(() => setState(null), 2500);
+  }
+  return (
+    <button type="button" className="btn btn-secondary btn-sm" onClick={copy}>
+      <Icon name={state === 'ok' ? 'check' : 'file'} size={14} />
+      {state === 'ok' ? 'Copiado' : state === 'erro' ? 'Não foi possível copiar' : 'Copiar abordagem'}
+    </button>
+  );
+}
+
+const gradeColor ={ A: 'var(--grade-a)', B: 'var(--grade-b)', C: 'var(--grade-c)' };
 
 export default function CompanyReport({ result, actions }) {
   const { data, intel, source, cnpjFormatado } = result;
@@ -102,6 +167,7 @@ export default function CompanyReport({ result, actions }) {
             <div className="stack" style={{ gap: 8 }}>
               <h3 className="approach-title"><Icon name="trending" size={16} /> Sugestão de abordagem</h3>
               <ul className="approach">{intel.approach.map((t, i) => <li key={i}>{t}</li>)}</ul>
+              <div className="row"><CopyApproach text={approachText(data, intel, cnpjFormatado)} /></div>
             </div>
           )}
         </section>
@@ -114,8 +180,14 @@ export default function CompanyReport({ result, actions }) {
           <div><dt>Situação desde</dt><dd>{formatDate(data.situacaoData)}{data.motivoSituacao && data.situacao !== 'ATIVA' ? ` · ${data.motivoSituacao}` : ''}</dd></div>
           <div><dt>Atividade principal (CNAE)</dt><dd>{data.cnaePrincipal ? `${cnae(data.cnaePrincipal.codigo)} · ${data.cnaePrincipal.descricao || ''}` : '—'}</dd></div>
           <div><dt>Endereço</dt><dd>{address(data.endereco)}{mapsUrl(data.endereco) && <> <a className="map-link" href={mapsUrl(data.endereco)} target="_blank" rel="noopener noreferrer"><Icon name="pin" size={14} /> Ver no mapa</a></>}</dd></div>
-          <div><dt>Telefone</dt><dd>{data.telefones?.length ? data.telefones.join(' · ') : '—'}</dd></div>
-          <div><dt>E-mail</dt><dd>{data.email || '—'}</dd></div>
+          <div><dt>Telefone</dt><dd>{data.telefones?.length ? data.telefones.map((t, i) => (
+            <span key={i} className="phone">{i > 0 && ' · '}{t}{whatsappUrl(t) && <a className="map-link" href={whatsappUrl(t)} target="_blank" rel="noopener noreferrer">WhatsApp</a>}</span>
+          )) : '—'}</dd></div>
+          <div><dt>E-mail</dt><dd>{data.email ? <a href={`mailto:${data.email}`}>{data.email}</a> : '—'}</dd></div>
+          <div><dt>Pesquisar a empresa</dt><dd>
+            <a className="map-link" style={{ marginLeft: 0 }} href={searchLinks(data).google} target="_blank" rel="noopener noreferrer"><Icon name="search" size={14} /> Google</a>
+            <a className="map-link" href={searchLinks(data).linkedin} target="_blank" rel="noopener noreferrer"><Icon name="users" size={14} /> LinkedIn</a>
+          </dd></div>
         </dl>
         {data.cnaesSecundarios?.length > 0 && (
           <details>

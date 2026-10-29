@@ -7,6 +7,19 @@ import { extractCnpjs } from '@/lib/cnpj';
 import ProspectExplorer from '../components/Prospect';
 import { Alert, Spinner, Icon, SectionTitle } from '../components/ui';
 
+function downloadTemplate() {
+  const csv = 'cnpj;empresa;observacao\n11.222.333/0001-81;Empresa exemplo;Troque pelos CNPJs da sua lista\n';
+  const blob = new Blob(['﻿', csv], { type: 'text/csv;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'modelo-lista-cnpjs.csv';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
 function NewList({ onCreated }) {
   const [name, setName] = useState('');
   const [text, setText] = useState('');
@@ -47,7 +60,8 @@ function NewList({ onCreated }) {
   return (
     <form className="card stack" onSubmit={create}>
       <SectionTitle icon="plus">Nova lista de prospecção</SectionTitle>
-      <p className="small muted">Cole uma coluna de CNPJs (do Excel, de uma feira, de uma associação…) ou envie um arquivo CSV. O app confere cada CNPJ, busca os dados na Receita e calcula o score. Até 1.000 por lista.</p>
+      <p className="small muted">Cole uma coluna de CNPJs (do Excel, de uma feira, de uma associação…) ou envie um arquivo CSV. O app confere cada CNPJ, busca os dados na Receita e calcula o score. Até 1.000 por lista. Outras colunas (nome, cidade, observação) são ignoradas.{' '}
+        <button type="button" className="btn btn-ghost btn-sm" onClick={downloadTemplate}><Icon name="file" size={14} />Baixar modelo de CSV</button></p>
       <div className="grid grid-2">
         <label className="field" htmlFor="list-name">
           Nome da lista
