@@ -31,7 +31,7 @@ Também tem: **follow-up automático** (um “a fazer” para o responsável qua
 - **Cache local:** consultas de CNPJ guardadas por 30 dias (configurável) e lista de empresas do CRM sincronizada no máximo a cada 10 minutos.
 - **Configuração inicial:** assistente em 3 passos (conexão, campos do CRM e preferências), mais a aba na empresa no modo aplicativo.
 - **Permissões:** aberto pelo Bitrix24, o app usa o token de quem está usando e respeita as permissões dele no CRM. Só administradores alteram a configuração.
-- **Segurança:** webhook e tokens criptografados (AES-256-GCM); a chave vem de `APP_SECRET` e nunca fica no código. Sessão em cookie assinado (HttpOnly). A senha de acesso é guardada com scrypt. Há limite de tentativas de login, os logs não guardam tokens e o app só solicita os escopos `crm`, `user` e `placement`.
+- **Segurança:** webhook e tokens criptografados (AES-256-GCM); a chave vem de `APP_SECRET` e nunca fica no código. Sessão em cookie assinado (HttpOnly). A senha de acesso é guardada com scrypt. Há limite de tentativas de login, os logs não guardam tokens e o app só solicita os escopos necessários: `crm` e `user` (mais `task` se o portal não tiver “a fazer” no CRM; `placement` só no modo aplicativo).
 - **Interface:** toda em português e responsiva.
 - **Erros e logs:** mensagens claras e registro das operações na tela **Logs** e no console.
 
