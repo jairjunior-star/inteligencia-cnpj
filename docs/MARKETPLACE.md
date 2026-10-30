@@ -62,8 +62,8 @@ O app age com as permissões do usuário que criou o webhook. Para usar com outr
 
 Capturas com dados fictícios (pasta `imagens/`, 1920×1200):
 
-1. `1-consulta-score.png`: consulta de CNPJ com score, prioridade, segmento e porte.
-2. `2-abordagem-contato.png`: como o score foi calculado e a sugestão de abordagem.
+1. `1-tela-inicial.png`: tela inicial, onde o vendedor digita o CNPJ.
+2. `2-resultado-score.png`: resultado da consulta com score, prioridade, segmento, porte e local.
 3. `3-prospeccao-lista.png`: lista de prospecção com filtros por CNAE, segmento, porte e região.
 4. `4-previa-atualizacao.png`: prévia do que muda no CRM antes de atualizar.
 5. `5-painel.png`: painel com prioridades, segmentos e porte da base.
